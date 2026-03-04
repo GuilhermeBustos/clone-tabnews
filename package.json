@@ -17,7 +17,9 @@
     "migration:up": "node-pg-migrate --migrations-dir infra/migrations --envPath .env.development up",
     "wait-for-postgres": "node infra/scripts/wait-for-postgres.js",
     "prepare": "husky",
-    "commit": "cz"
+    "commit": "cz",
+    "scan:staged": "npx gitleaks-secret-scanner --diff-mode staged",
+    "scan:all": "npx gitleaks-secret-scanner --diff-mode history"
   },
   "author": "",
   "license": "MIT",
@@ -41,6 +43,7 @@
     "eslint-config-next": "^14.2.4",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "^28.6.0",
+    "gitleaks-secret-scanner": "^2.1.1",
     "husky": "^9.1.4",
     "jest": "^29.6.2",
     "prettier": "^3.7.4"
