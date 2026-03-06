@@ -7,30 +7,52 @@ async function fetchAPI(key) {
 }
 
 export default function StatusPage() {
-  const { data, error, isLoading } = useSWR("/api/v1/status", fetchAPI, {
+  return (
+    <>
+      <h1>System status</h1>
+      <UpdatedAt />
+      <DatabaseStatus />
+    </>
+  );
+}
+
+function UpdatedAt() {
+  const { data, isLoading } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 2000,
   });
 
-  if (isLoading) {
-    return <div>Loading data...</div>;
+  let updatedAtText = "Loading...";
+
+  if (!isLoading && data) {
+    updatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
   }
 
-  if (error) {
-    return <div>Error loading data: {error.message}</div>;
-  }
+  return <div>Last update: {updatedAtText}</div>;
+}
 
-  const database = data.dependencies.database;
+function DatabaseStatus() {
+  const { data, isLoading } = useSWR("/api/v1/status", fetchAPI, {
+    refreshInterval: 2000,
+  });
 
-  return (
-    <>
-      <h1>Status Page</h1>
-      <p>Last update: {new Date(data.updated_at).toLocaleString("pt-BR")}</p>
-      <section>
+  let databaseStatusInformation = "Loading...";
+
+  if (!isLoading && data) {
+    databaseStatusInformation = (
+      <>
+        <div>Version: {data.dependencies.database.version}</div>
+        <div>
+          Opened connections: {data.dependencies.database.opened_connections}
+        </div>
+        <div>Max connections: {data.dependencies.database.max_connections}</div>
+      </>
+    );
+
+    return (
+      <>
         <h2>Database health:</h2>
-        <p>Version: {database.version}</p>
-        <p>Opened connections: {database.opened_connections}</p>
-        <p>Max connections: {database.max_connections}</p>
-      </section>
-    </>
-  );
+        {databaseStatusInformation}
+      </>
+    );
+  }
 }
