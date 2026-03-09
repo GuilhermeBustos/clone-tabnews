@@ -22,6 +22,7 @@ describe("POST /api/v1/migrations", () => {
         expect(Array.isArray(response1Body)).toBe(true);
         expect(response1Body.length).toBeGreaterThan(0);
       });
+
       test("For the second time", async () => {
         const response2 = await fetch(
           "http://localhost:3000/api/v1/migrations",
@@ -35,6 +36,25 @@ describe("POST /api/v1/migrations", () => {
 
         expect(Array.isArray(response2Body)).toBe(true);
         expect(response2Body.length).toBe(0);
+      });
+
+      test("Using the wrong method", async () => {
+        const response3 = await fetch(
+          "http://localhost:3000/api/v1/migrations",
+          {
+            method: "DELETE",
+          },
+        );
+        expect(response3.status).toBe(405);
+
+        const response3Body = await response3.json();
+
+        expect(response3Body).toEqual({
+          name: "MethodNotAllowed",
+          message: "Method not allowed",
+          action: "Check if the requested method is correct",
+          status_code: 405,
+        });
       });
     });
   });
