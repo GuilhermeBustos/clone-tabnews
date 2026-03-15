@@ -26,6 +26,11 @@ describe("GET /api/v1/user", () => {
 
       expect(response.status).toBe(200);
 
+      const cacheControl = response.headers.get("Cache-Control");
+      expect(cacheControl).toBe(
+        "no-store, no-cache, max-age=0, must-revalidate",
+      );
+
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
@@ -79,7 +84,6 @@ describe("GET /api/v1/user", () => {
       const existingSessionObject = await orchestrator.createSession(
         userWithExistingSessions.id,
       );
-      console.log("Existing session: \n", existingSessionObject);
 
       jest.useRealTimers();
 
@@ -110,7 +114,6 @@ describe("GET /api/v1/user", () => {
       const renewedSessionObject = await session.findOneValidByToken(
         existingSessionObject.token,
       );
-      console.log("Renewed session: \n", renewedSessionObject);
 
       expect(
         renewedSessionObject.expires_at > existingSessionObject.expires_at,
